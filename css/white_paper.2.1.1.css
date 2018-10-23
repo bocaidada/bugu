@@ -1,0 +1,107 @@
+html,
+body,
+div,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+img,
+strong,
+ul,
+li
+{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+    outline-style: none;
+    /*FF*/
+}
+section{
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    overflow-y:scroll; 
+    background: url(../img/img_lbb_2.1.1/backgroundya@2x.jpg) no-repeat center/cover;
+    -webkit-overflow-scrolling:touch; 
+    overflow-scrolling: touch;
+    font-family:'PingFang SC','Microsoft YaHei','SimSun','Arial', sans-serif;
+}
+section::-webkit-scrollbar {
+    display: none;
+}
+section>div>p{
+    padding: 0 .666667rem;
+    line-height: 0.55rem;
+}
+.box{
+    padding-top: 1.65rem;
+}
+.imgBox{
+    padding: 0;
+    margin-bottom: .3rem;
+}
+.imgBox>img{
+    width: 100%;
+    margin: 0 auto .266667rem;
+    }
+.title{
+    background: linear-gradient(to right, dodgerBlue, skyBlue);
+    -webkit-background-clip: text;
+    color: transparent;
+    line-height: 1.6rem;
+    text-align: center;
+    font-size: .533333rem;
+    font-weight: 600;
+}
+.intro{
+    color: #fff;
+    font-size: .373333rem;
+    margin-bottom: .6rem;
+}
+.intro>span{
+    color: rgb(245, 166, 35);
+}
+.intro:last-child{
+    margin-bottom: .64rem;
+}
+.col_intor{
+    color: rgb(245, 166, 35);
+    font-size: .373333rem;
+    margin-bottom: .266667rem;
+}
+.bul_intor{
+    color: skyBlue;
+    font-size: .373333rem;
+    margin-bottom: .533333rem;
+}
+.but{
+    line-height: 1.6rem;
+    text-align: center;
+    font-size: .533333rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: .026667rem;
+    background: linear-gradient(to right, dodgerBlue, skyBlue);
+}
+.full{
+    position: fixed;
+    top: 4rem;
+    right: -.4rem;
+    width: 2.666667rem;
+    height: .746667rem;
+    line-height: .746667rem;
+    font-size: .32rem;
+    color: #fff;
+    background: linear-gradient(to right, rgb(33, 66, 146), rgb(47, 111, 154));
+    border-radius: .35rem;
+    text-align: center;
+    letter-spacing: .026667rem;
+}

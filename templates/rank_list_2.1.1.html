@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <title>挖矿排行榜</title>
+    <script src="../js/common/rem.js"></script>
+
+    <!--前端页面在线测试-->
+    <!--<script src="../js/common/vconsole.min.js"></script>-->
+    <!--<script>-->
+        <!--new VConsole();-->
+    <!--</script>-->
+    <style>
+        body,html,p,ul,li,img{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            /*overflow-y: scroll;*/
+            color: #fff;
+            padding: 0 0.3rem;
+            background: linear-gradient(to bottom,#13055C,#12042F);
+            box-sizing: border-box;
+            letter-spacing: 0.02rem;
+            font-family:'PingFang SC','Microsoft YaHei','SimSun','Arial', sans-serif;
+
+        }
+        li{
+            list-style-type: none;
+        }
+        .rink_box{
+            width: 100%;
+            height: 100%;
+            padding-top: 0.9rem;
+            box-sizing: border-box;
+        }
+        header{
+            width: 100%;
+            height: 0.6rem;
+            line-height: 0.6rem;
+            overflow: hidden;
+            margin-bottom: 0.4rem;
+        }
+        .head_left{
+            width: 44%;
+            float: left;
+            /*text-align: right;*/
+            font-size: 0.36rem;
+        }
+        .head_left>img{
+            /*padding-right: 0.2rem;*/
+            width: 0.4rem;
+            vertical-align: middle;
+        }
+        .head_right{
+            width: 26%;
+            height: 100%;
+            float: right;
+            font-size: 0.28rem;
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,.6);
+        }
+        .head_right>div{
+            width: 50%;
+            height: 100%;
+            position: relative;
+        }
+        .head_color{
+            color: #fff;
+        }
+        .head_right>div:first-child{
+            text-align: left;
+        }
+        .head_right>div:last-child{
+            text-align: right;
+        }
+        .yest{
+            position: absolute;
+            display: block;
+            bottom: 0;
+            width: 0.4rem;
+            height: 0.04rem;
+            background: #4B8DF9;
+        }
+        .head_right>div:first-child>.yest{
+            left: 0.08rem;
+        }
+        .head_right>div:last-child>.yest{
+            right: 0.14rem;
+        }
+        .user{
+            width: 100%;
+            height: 1.34rem;
+            border-radius: 0.15rem;
+            background: rgba(75,142,248,.16);
+            display: flex;
+            justify-content: space-between;
+            line-height: 1.34rem;
+            font-size: 0.32rem;
+            padding: 0 0.15rem;
+            box-sizing: border-box;
+        }
+        .user_left{
+            width: 67%;
+            height: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .user_left>.number{
+            display: inline-block;
+            width: 0.4rem;
+            height: 0.4rem;
+            border-radius: 0.1rem;
+            text-align: center;
+            line-height: 0.4rem;
+            font-size: 0.28rem;
+            color: rgba(255,255,255,.6);
+        }
+        .user_left>img{
+            width: 0.7rem;
+            height: 0.7rem;
+            border-radius: 50%;
+            overflow: hidden;
+            vertical-align: middle;
+            margin: 0 0.1rem;
+        }
+        .user_right{
+            color: rgba(255,255,255,.9);
+        }
+        #listBox{
+            width: 100%;
+            height: 75vh;
+            overflow: hidden;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling:touch;
+            overflow-scrolling: touch;
+        }
+        #listBox::-webkit-scrollbar{
+            display: none;
+        }
+        ul{
+            width: 100%;
+            height: auto;
+        }
+        .list{
+            background: none;
+            height: 1.2rem;
+            line-height: 1.2rem;
+        }
+        .list>.user_left>img{
+            width: 0.6rem;
+            height: 0.6rem;
+        }
+        .list>.user_right{
+            color: rgba(255,255,255,.5);
+        }
+        .list>.user_left>.number{
+            font-size: 0.24rem;
+        }
+        .loding{
+            text-align: center;
+            line-height: 0.6rem;
+            font-size: 0.28rem;
+            color: rgba(255,255,255,.5);
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div id="root">
+    <section class="rink_box">
+        <header>
+            <div class="head_left">
+                <img src="../img/img_lbb_2.1.1/arrow_all_back@2x.png" alt="" @click="click('back')">
+                <span>全球挖矿榜单</span>
+            </div>
+            <div class="head_right">
+                <div @click="click('yesterday')" :class="[headFlag ? 'head_color' : '']">
+                    <span>昨日</span>
+                    <span class="yest" v-show="headFlag"></span>
+                </div>
+                <div @click="click('addUp')" :class="[!headFlag ? 'head_color' : '']">
+                    <span>累计</span>
+                    <span class="yest" v-show="!headFlag" v-cloak></span>
+                </div>
+            </div>
+        </header>
+        <div class="user" v-show="userFlag" v-cloak>
+            <div class="user_left">
+                <span class="number" v-text="dataList.rankCode"></span>
+                <img :src="dataList.avator" alt="">
+                <span class="userName" v-text="dataList.nickName"></span>
+            </div>
+            <div class="user_right" v-text="dataList.slkNum"></div>
+        </div>
+        <div id="listBox" :style="{height:listHeight}">
+            <ul>
+                <li class="user list" v-for="(item, index) in dataList.ranks" v-cloak>
+                    <div class="user_left">
+                        <span class="number" v-if="index == '0'" style="background: linear-gradient(to bottom,#FFAC1C,#FFD01D);color: #fff" v-text="index+1"></span>
+                        <span class="number" v-else-if="index == '1'" style="background: linear-gradient(to bottom,#4179F7,#65C1FF);color: #fff;" v-text="index+1"></span>
+                        <span class="number" v-else-if="index == '2'" style="background: linear-gradient(to bottom,#AA61FA,#491CF7);color: #fff " v-text="index+1"></span>
+                        <span class="number" v-else="index == '0'" v-text="index+1"></span>
+                        <img :src="item.avator" alt="">
+                        <span class="userName" v-text="item.nickName"></span>
+                    </div>
+                    <div class="user_right" v-text="item.slkNum"></div>
+                </li>
+            </ul>
+            <div class="loding" v-if="loadShow" v-cloak>已经到底线啦～</div>
+        </div>
+    </section>
+</div>
+<script src="../js/common/jquery.min.js"></script>
+<script src="../js/common/JanesiBridges.js"></script>
+<script src="../js/common/vue-min.js"></script>
+<script>
+    new Vue({
+        el:'#root',
+        data:{
+            listHeight:'75vh',
+            headFlag:true,
+            userFlag:false,
+            loadShow:false,
+            dataList:{},
+            yestData:{},
+            allData:{}
+        },
+        created:function () {
+            this.initData ()
+        },
+        mounted:function () {
+            document.getElementById('listBox').addEventListener('scroll',this.scroll);
+            this.reload ()
+        },
+        methods: {
+            //页面刷新
+            reload () {
+                var _this = this;
+                window.JanesiBridge.commonNativeCallJS = function (res) {
+                    console.log(res);
+                    if (res.action == 'reloaded') {
+                        _this.initData ();
+                    }
+                }
+            },
+            initData () {
+                var _this= this;
+                // 累计数据
+                // window.JanesiApi.reqUrl = 'http://10.10.10.81:8803';
+                window.JanesiApi.reqUrl = 'http://pre.soulian.janesi.com';
+                JanesiApi.sendApi('/app/soulian/slk/slk_rank', 'post', {
+                    // userId:'1336',
+                    rankType:'ALL'
+                }, function (res) {
+                    console.log(res.result);
+                    // _this.initData = res.result;
+                    _this.allData = res.result;
+                    console.log(_this.allData)
+                });
+                // 昨日数据
+                JanesiApi.sendApi('/app/soulian/slk/slk_rank', 'post', {
+                    // userId:'1336',
+                    rankType:'YESTERDAY'
+                }, function (res) {
+                    _this.yestData = res.result;
+                    console.log(_this.yestData);
+                    if (_this.yestData.rankCode == '-1') {
+                        _this.userFlag = false;
+                        _this.listHeight = '86vh'
+                    }else{
+                        _this.userFlag = true;
+                        _this.listHeight = '75vh'
+                    }
+                    _this.dataList = _this.yestData
+                })
+            },
+            click(params) {
+                if(params == 'yesterday') {
+                    this.headFlag = true;
+                    if (this.yestData.rankCode == '-1') {
+                        this.userFlag = false;
+                        this.listHeight = '86vh'
+                    }else{
+                        this.userFlag = true;
+                        this.listHeight = '75vh'
+                    }
+                    this.dataList = this.yestData;
+                    return
+                }
+                if(params == 'addUp') {
+                    this.headFlag = false;
+                    if (this.allData.rankCode == '-1') {
+                        this.userFlag = false;
+                        this.listHeight = '86vh'
+                    }else{
+                        this.userFlag = true;
+                        this.listHeight = '75vh'
+                    }
+                    this.dataList = this.allData;
+                    return
+                }
+                if(params == 'back') {
+                    window.JanesiBridge.callNative('close',{});
+                    alert('返回')
+                }
+            },
+            scroll () {
+                var _this = this;
+                var scrollTop = $('#listBox').scrollTop();
+                var scrollHeight = $('ul').height()-1;
+                var windowHeight = $('#listBox').height();
+                if(windowHeight + scrollTop >= scrollHeight){
+                    // _this.pageNo = parseInt(_this.pageNo) + 1;
+                    // if(_this.invited_flag){
+                    //     JanesiApi.sendApi('/app/soulian/trade/list', 'post', {
+                    //         pageNo: _this.pageNo
+                    //     }, function (res) {
+                    //         console.log(res.result);
+                    //         if(res.result.length == '0'){
+                    //             _this.loadShow = !_this.loadShow;
+                    //             _this.invited_flag = !_this.invited_flag;
+                    //         }else{
+                    //             _this.dataInit = _this.dataInit.concat(res.result);
+                    //         }
+                    //     })
+                    // }
+                    _this.loadShow = true;
+                }
+            }
+        }
+    })
+</script>
+</body>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <script src="../js/common/flexible.js"></script>
+    <title>邀请记录</title>
+    <style>
+        html, body, ul, li, img, p{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            background: #fff;
+        }
+        .banner{
+            padding: 0 .4rem;
+            /* width: 100%; */
+            height: 4.106667rem;
+            background: url('../img/img_lbb_2.1.1/taskImg.png') no-repeat center/cover;
+            color: rgba(255,255,255,0.83);
+            border-bottom: .266667rem solid rgb(245, 245, 245)
+        }
+        .banner>div:first-child{
+            height: 1.4rem;
+            line-height: 1.65rem;
+            font-size: .373333rem;
+        }
+        .num{
+            height: 1.4rem;
+            font-size: 1.28rem;
+            margin-bottom: .4rem;
+        }
+        .Ranking{
+            width: 100%;
+        }
+        .rank_top{
+            padding:0 .4rem;
+            line-height: 1.333333rem;
+            color: #333;
+            font-size: .426667rem;
+            letter-spacing: .013333rem;  
+        }
+        .rank_tit{
+            padding:0 .4rem;
+            line-height: .8rem;
+            background: rgb(245, 245, 245);
+            display: flex;
+            justify-content: space-between;
+            color: rgb(153,153,153);
+            font-size: .373333rem;
+        }
+        .rank_tit>div:first-child{
+            width: 40%;
+        }
+        .rank_tit>div:nth-child(2){
+            width: 40%;
+        }
+        .rank_tit>div:last-child{
+            width: 20%;
+        }
+        .rank_tit>div:last-child{
+            text-align: right;
+        }
+        .rank_list{
+            padding:0 .4rem;
+        }
+        .list{
+            padding:0;
+            line-height: 1.333333rem;
+            height: 1.333333rem;
+            background: #fff;
+            border-bottom: .013333rem solid rgb(235, 235, 235);
+        }
+        .list>div:first-child{
+            color: #333;
+            white-space: nowrap;  
+            text-overflow:ellipsis; 
+            overflow:hidden;
+        }
+        .list:last-child{
+            border-bottom: none;
+        }
+        .none_rocord{
+            line-height: 200px;
+            text-align: center;
+            color: rgb(153,153,153);
+            font-size: .373333rem;
+            letter-spacing: .026667rem;
+        }
+        .hit{
+            text-align: center;
+            font-size: .373333rem;
+            color: rgb(153,153,153);
+            letter-spacing: 0.02rem;
+        }
+        .hit>img{
+            display: block;
+            width: 3rem;
+            margin: 2rem auto 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <section class="banner">
+            <div>邀请累积获得算力</div>
+            <div class="num" id="num">{{invitePower}}</div>
+            <div class="residue">今日剩余 <span id="residue">{{surplus}}</span> 次</div>
+        </section>
+        <section class="Ranking">
+            <div class="rank_top">我邀请的好友</div>
+            <div class="rank_tit">
+                <div>昵称</div>
+                <div>时间</div>
+                <div>算力</div>
+            </div>
+            <div v-if="dataShow" class="hit">
+                <img src="../img/img_lbb_2.1.1/Rectangle%203@2x.png" alt="">
+                <span>暂无邀请记录</span>
+            </div>
+            <ul v-else class="rank_list" id="rank_list">
+                <li v-for="item in listData" class="rank_tit list">
+                    <div>{{item.nickName}}</div>
+                    <div>{{item.gmtCreate}}</div>
+                    <div>+{{item.power}}</div>
+                </li>
+            </ul>
+        </section>
+    </div>
+    <script src="../js/common/zepto.min.js"></script>
+    <script src="../js/common/JanesiBridges.js"></script>
+    <script src="../js/common/vue.js"></script>
+
+    <script>
+        new Vue({
+            el: '#root',
+            data: {
+                dataShow:true,
+                invitePower:'',
+                surplus:'',
+                listData:[]
+            },
+            created: function () {
+                this.invited_list();
+            },
+            mounted: function () {
+                window.JanesiBridge.callNative('isLoaded', {});
+                this.exposure()
+            },
+            watch: {
+
+            },
+            methods: {
+                exposure() {
+                    // window.JanesiApi.reqUrl = "http://118.25.10.151:8808/log/spm"
+                    var myDate = new Date().getTime();
+                    JanesiApi.trackApi('/log/spm', 'get', {
+                        eventType: 'show',
+                        eventTime: myDate,
+                        end_type: 'h5',
+                        url: window.location.href,
+                        referrer: '',
+                        h5_locaiton: 'invited_record'
+                    }, function (res) {
+                        console.log('ok')
+                    })
+                },
+                invited_list () {
+                    var _this = this;
+                    // 冠羽
+                    // window.JanesiApi.reqUrl = 'http://10.10.10.65:8803';
+                    JanesiApi.sendApi('/app/soulian/user/invite_list', 'post', {
+                        // userId:'1510'
+                    }, function (res) {
+                        console.log(res.result);
+                        _this.invitePower = res.result.invitePower;
+                        _this.surplus = res.result.surplus;
+                        if(_this.invitePower != '0'){
+                            _this.listData = res.result.inviteUsers;
+                            _this.dataShow = !_this.dataShow;
+                        }
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>
